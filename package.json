@@ -14,8 +14,13 @@
   "contributes": {
     "commands": [
       {
-        "command": "vuetspercentage.helloWorld",
-        "title": "vuetspercentage"
+        "command": "vuetspercentage2.helloWorld",
+        "title": "vuetspercentage2"
+      },
+      {
+        "command": "catCoding.start",
+        "title": "Start new cat coding session",
+        "category": "Cat Coding"
       }
     ]
   },
@@ -28,7 +33,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "vsce-package": "vsce package"
   },
   "devDependencies": {
     "@types/vscode": "^1.77.0",
