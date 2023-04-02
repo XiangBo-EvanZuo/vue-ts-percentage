@@ -1,8 +1,9 @@
 {
-  "name": "vuetspercentage",
-  "displayName": "VueTsPercentage",
-  "description": "caculate the percentage of vue project and graph",
-  "version": "0.0.1",
+  "name": "hello-world-vue",
+  "displayName": "hello-world-vue",
+  "description": "A hello world sample extension to demonstrate using Vue with the Webview UI Toolkit for VS Code.",
+  "version": "0.0.2",
+  "publisher": "EvanZuo",
   "engines": {
     "vscode": "^1.77.0"
   },
@@ -10,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
@@ -18,38 +19,30 @@
         "title": "vuetspercentage2"
       },
       {
-        "command": "catCoding.start",
-        "title": "Start new cat coding session",
-        "category": "Cat Coding"
+        "command": "hello-world.showHelloWorld",
+        "title": "Hello World (Vue): Show"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
-    "vsce-package": "vsce package"
+    "install:all": "npm install && npm --prefix ./webview-ui install ./webview-ui",
+    "dev:webview": "cd webview-ui && pnpm run dev",
+    "build:webview": "cd webview-ui && pnpm run build",
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts"
   },
   "devDependencies": {
-    "@types/vscode": "^1.77.0",
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
-    "eslint": "^8.36.0",
-    "glob": "^8.1.0",
-    "mocha": "^10.2.0",
-    "typescript": "^4.9.5",
-    "ts-loader": "^9.4.2",
-    "webpack": "^5.76.3",
-    "webpack-cli": "^5.0.1",
-    "@vscode/test-electron": "^2.3.0"
+    "@types/glob": "^7.1.3",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.46.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "eslint": "^7.19.0",
+    "glob": "^7.1.6",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0"
   }
 }
