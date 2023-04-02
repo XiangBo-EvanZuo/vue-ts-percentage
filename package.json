@@ -25,13 +25,12 @@
     ]
   },
   "scripts": {
-    "install:all": "npm install && npm --prefix ./webview-ui install ./webview-ui",
     "dev:webview": "cd webview-ui && pnpm run dev",
     "build:webview": "cd webview-ui && pnpm run build",
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "vscode:prepublish2": "pnpm run compile",
+    "compile": "pnpm tsc ./src/extension.ts -w --outDir out",
+    "watch": "pnpm tsc ./src/extension.ts -w --outDir out -watch",
+    "pretest": "pnpm run compile && pnpm run lint",
     "lint": "eslint src --ext ts",
     "vsce-package": "vsce package"
   },
