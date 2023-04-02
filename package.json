@@ -15,8 +15,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vuetspercentage2.helloWorld",
-        "title": "vuetspercentage2"
+        "command": "VueTsPercentage.helloWorld",
+        "title": "VueTsPercentage"
       },
       {
         "command": "hello-world.showHelloWorld",
@@ -32,7 +32,8 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "vsce-package": "vsce package"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

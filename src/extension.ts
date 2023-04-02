@@ -8,10 +8,10 @@ export function activate(context: ExtensionContext) {
     HelloWorldPanel.render(context.extensionUri);
   });
 
-  const fileCommand = commands.registerCommand('vuetspercentage2.helloWorld', () => {
+  const fileCommand = commands.registerCommand('VueTsPercentage.helloWorld', () => {
     // The code you place here will be executed every time your command is executed
     // Display a message box to the user
-    window.showInformationMessage('Hello World from VueTsPercentage2222!');
+    window.showInformationMessage('Hello World from VueTsPercentage!');
     let editor = window.activeTextEditor;
     if (!editor) {
       return;
