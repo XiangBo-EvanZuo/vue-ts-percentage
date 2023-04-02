@@ -31,12 +31,14 @@
   "scripts": {
     "dev:webview": "cd webview-ui && pnpm run dev",
     "build:webview": "cd webview-ui && pnpm run build",
-    "vscode:prepublish2": "pnpm run compile",
-    "compile": "pnpm tsc ./src/extension.ts -w --outDir out",
-    "watch": "pnpm tsc ./src/extension.ts -w --outDir out -watch",
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "pnpm webpack",
+    "watch": "pnpm webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
     "pretest": "pnpm run compile && pnpm run lint",
     "lint": "eslint src --ext ts",
-    "vsce-package": "vsce package"
+    "vsce-package": "vsce package",
+    "dev": "webpack --mode production --devtool hidden-source-map"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
@@ -47,6 +49,10 @@
     "eslint": "^7.19.0",
     "glob": "^7.1.6",
     "typescript": "^4.1.3",
-    "vscode-test": "^1.5.0"
+    "vscode-test": "^1.5.0",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.76.3",
+    "webpack-cli": "^5.0.1",
+    "@vscode/test-electron": "^2.3.0"
   }
 }
