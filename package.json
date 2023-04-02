@@ -2,7 +2,7 @@
   "name": "vuetspercentage",
   "displayName": "VueTsPercentage",
   "description": "caculate the percentage of vue project and graph",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "EvanZuo",
   "engines": {
     "vscode": "^1.77.0"
