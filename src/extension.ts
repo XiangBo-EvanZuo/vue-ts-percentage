@@ -1,8 +1,9 @@
-import { commands, ExtensionContext, window, SnippetString } from "vscode";
+import { commands, ExtensionContext, window, SnippetString, WebviewPanel } from "vscode";
 import { HelloWorldPanel } from "./panels/HelloWorldPanel";
 import { getFileList } from './utilities/file';
 
 export function activate(context: ExtensionContext) {
+  console.log('123');
   // Create the show hello world command
   const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", () => {
     HelloWorldPanel.render(context.extensionUri);
@@ -21,7 +22,24 @@ export function activate(context: ExtensionContext) {
     editor.insertSnippet(snippet);
   });
 
+  const data = commands.registerCommand('catCoding.doRefactor', () => {
+    const currentPanel = HelloWorldPanel.currentPanel;
+    console.log({ currentPanel });
+    if (!currentPanel) {
+      window.showInformationMessage('not has!');
+      return;
+    }
+    window.showInformationMessage('has!');
+    window.showInformationMessage('has2!');
+
+    // Send a message to our webview.
+    // You can send any JSON serializable data.
+    currentPanel._panel.webview.postMessage({ command: 'refactor' });
+    window.showInformationMessage('postMessage!');
+
+  });
   // Add command to the extension context
   context.subscriptions.push(fileCommand);
   context.subscriptions.push(showHelloWorldCommand);
+  context.subscriptions.push(data);
 }

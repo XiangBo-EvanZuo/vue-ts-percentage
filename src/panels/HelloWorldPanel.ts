@@ -13,7 +13,7 @@ import { getUri } from "../utilities/getUri";
  */
 export class HelloWorldPanel {
   public static currentPanel: HelloWorldPanel | undefined;
-  private readonly _panel: WebviewPanel;
+  public readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
 
   /**

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
+import { onMounted, ref } from "vue";
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -27,11 +28,26 @@ function handleHowdyClick() {
     text: "Hey there partner! 🤠",
   });
 }
+const data = ref(0);
+onMounted(() => {
+  data.value = 10;
+  window.addEventListener('message', event => {
+    const message = event.data; // The JSON data our extension sent
+    data.value = 20;
+    
+    switch (message.command) {
+      case 'refactor':
+        data.value = 200;
+    }
+  });
+})
+
 </script>
 
 <template>
   <main>
     <h1>Hello world!</h1>
+    <h1>{{ data }}</h1>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
   </main>
 </template>

@@ -19,6 +19,10 @@
         "title": "VueTsPercentage"
       },
       {
+        "command": "catCoding.doRefactor",
+        "title": "doRefactor"
+      },
+      {
         "command": "hello-world.showHelloWorld",
         "title": "Hello World (Vue): Show"
       }
