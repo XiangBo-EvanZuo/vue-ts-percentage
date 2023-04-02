@@ -1,8 +1,8 @@
 {
-  "name": "hello-world-vue",
-  "displayName": "hello-world-vue",
-  "description": "A hello world sample extension to demonstrate using Vue with the Webview UI Toolkit for VS Code.",
-  "version": "0.0.5",
+  "name": "vuetspercentage",
+  "displayName": "VueTsPercentage",
+  "description": "caculate the percentage of vue project and graph",
+  "version": "0.0.2",
   "publisher": "EvanZuo",
   "engines": {
     "vscode": "^1.77.0"
