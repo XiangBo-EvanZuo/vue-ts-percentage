@@ -24,6 +24,7 @@ export const getFileList = () => {
     if (fod?.length) {
         path1 = fod[0].uri.fsPath;
     }
+    console.log({path1});
     traversePath(path.join(path1, '/src'));
     return targetFilesMap;
 };

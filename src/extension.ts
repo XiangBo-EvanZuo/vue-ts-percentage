@@ -3,7 +3,6 @@ import { HelloWorldPanel } from "./panels/HelloWorldPanel";
 import { getFileList } from './utilities/file';
 
 export function activate(context: ExtensionContext) {
-  console.log('123');
   // Create the show hello world command
   const showHelloWorldCommand = commands.registerCommand("hello-world.showHelloWorld", () => {
     HelloWorldPanel.render(context.extensionUri);
@@ -24,7 +23,6 @@ export function activate(context: ExtensionContext) {
 
   const data = commands.registerCommand('catCoding.doRefactor', () => {
     const currentPanel = HelloWorldPanel.currentPanel;
-    console.log({ currentPanel });
     if (!currentPanel) {
       window.showInformationMessage('not has!');
       return;

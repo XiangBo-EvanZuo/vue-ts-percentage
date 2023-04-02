@@ -28,6 +28,7 @@ function handleHowdyClick() {
     text: "Hey there partner! 🤠",
   });
 }
+
 const data = ref(0);
 onMounted(() => {
   data.value = 10;

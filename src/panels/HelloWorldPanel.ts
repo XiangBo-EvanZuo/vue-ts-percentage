@@ -1,5 +1,6 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from "vscode";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString } from "vscode";
 import { getUri } from "../utilities/getUri";
+import { getFileList } from '../utilities/file';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -136,6 +137,14 @@ export class HelloWorldPanel {
           case "hello":
             // Code that should run in response to the hello message command
             window.showInformationMessage(text);
+            console.log({ list: getFileList });
+            try {
+              getFileList();
+            } catch (error) {
+              console.log({error});
+            }
+            this._panel.webview.postMessage({ command: 'refactor' });
+            window.showInformationMessage(getFileList().join('\n'));
             return;
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
