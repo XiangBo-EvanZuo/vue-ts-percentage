@@ -2,7 +2,7 @@
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
 import { onMounted, ref } from "vue";
-
+import Echats from './Echats.vue'
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
 // syntax below.
@@ -29,7 +29,16 @@ function handleHowdyClick() {
   });
 }
 
+function tsAnalyze() {
+  vscode.postMessage({
+    command: "TsAnalyze",
+    text: "Hey there partner! 🤠",
+  });
+}
+
 const data = ref(0);
+const showTsAnalyze = ref(false);
+const dataList = ref([]);
 onMounted(() => {
   data.value = 10;
   window.addEventListener('message', event => {
@@ -39,6 +48,9 @@ onMounted(() => {
     switch (message.command) {
       case 'refactor':
         data.value = 200;
+      case 'TsAnalyze':
+        showTsAnalyze.value = true;
+        dataList.value = message.data;
     }
   });
 })
@@ -48,8 +60,12 @@ onMounted(() => {
 <template>
   <main>
     <h1>Hello world!</h1>
-    <h1>{{ data }}</h1>
+    <h1>data: {{ data }}</h1>
+    <h1>dataList:{{ dataList }}</h1>
+    <div v-if="showTsAnalyze">showTsAnalyze</div>
+    <Echats></Echats>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
+    <vscode-button @click="tsAnalyze">showTsAnalyze!</vscode-button>
   </main>
 </template>
 

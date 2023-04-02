@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.0.0",
-    "vue": "^3.2.33"
+    "echarts": "^5.4.2",
+    "vue": "^3.2.33",
+    "vue-echarts": "^6.5.4"
   },
   "devDependencies": {
     "@types/node": "^16.11.27",

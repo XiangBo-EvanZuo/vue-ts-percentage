@@ -137,14 +137,9 @@ export class HelloWorldPanel {
           case "hello":
             // Code that should run in response to the hello message command
             window.showInformationMessage(text);
-            console.log({ list: getFileList });
-            try {
-              getFileList();
-            } catch (error) {
-              console.log({error});
-            }
-            this._panel.webview.postMessage({ command: 'refactor' });
-            window.showInformationMessage(getFileList().join('\n'));
+            return;
+          case 'TsAnalyze':
+            this._panel.webview.postMessage({ command: 'TsAnalyze', data: getFileList() });
             return;
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
