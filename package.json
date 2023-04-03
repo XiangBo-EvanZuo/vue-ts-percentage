@@ -15,6 +15,10 @@
   "contributes": {
     "commands": [
       {
+        "command": "changeEchart.changeEchart",
+        "title": "ChangeEchart"
+      },
+      {
         "command": "VueTsPercentage.helloWorld",
         "title": "VueTsPercentage"
       },

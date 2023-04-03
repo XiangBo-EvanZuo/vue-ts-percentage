@@ -36,8 +36,13 @@ export function activate(context: ExtensionContext) {
     window.showInformationMessage('postMessage!');
 
   });
+  const changeEchart = commands.registerCommand('changeEchart.changeEchart', () => {
+    const currentPanel = HelloWorldPanel.currentPanel!;
+    currentPanel._panel.webview.postMessage({ command: 'changeEchart' });
+  });
   // Add command to the extension context
   context.subscriptions.push(fileCommand);
   context.subscriptions.push(showHelloWorldCommand);
   context.subscriptions.push(data);
+  context.subscriptions.push(changeEchart);
 }

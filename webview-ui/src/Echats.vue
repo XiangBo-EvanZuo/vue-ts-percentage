@@ -11,10 +11,13 @@ import {
     TooltipComponent,
     LegendComponent,
 GridComponent,
-ToolboxComponent
+ToolboxComponent,
+DataZoomComponent,
+DataZoomInsideComponent,
+DataZoomSliderComponent
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
-import { ref, provide } from "vue";
+import { ref, provide, onMounted } from "vue";
 
 use([
     CanvasRenderer,
@@ -24,6 +27,9 @@ use([
     LineChart,
     GridComponent,
     ToolboxComponent,
+    DataZoomComponent,
+    DataZoomInsideComponent,
+    DataZoomSliderComponent
 ]);
 
 provide(THEME_KEY, "dark");
@@ -88,8 +94,29 @@ const option = ref({
             stack: 'Total',
             data: [820, 932, 901, 934, 1290, 1330, 1320]
         }
-    ]
+    ],
+    dataZoom: [
+        {
+            type: 'inside',
+            start: 0,
+            end: 100
+        },
+        {
+            start: 0,
+            end: 100
+        }
+    ],
 });
+
+onMounted(() => {
+    window.addEventListener('message', event => {
+        const message = event.data; // The JSON data our extension sent
+        switch (message.command) {
+            case 'changeEchart':
+                option.value.series[0].data = [12, 132, 101, 134, 90, 230, 2100];
+        }
+    });
+})
 </script>
 
 <style scoped>
