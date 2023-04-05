@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { PathLike } from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -6,7 +7,7 @@ export const getFileList = () => {
     const targetFilesMap: string[] = []; // 存放找到的目标文件所在路径
     const traversePath = (entryPath: string) => {
         const dirArr = fs.readdirSync(entryPath);
-        console.log({ dirArr });
+        // console.log({ dirArr });
         dirArr.forEach((item: string) => {
             const itemPath = path.join(entryPath, item);
             const fileStat = fs.statSync(itemPath);
@@ -24,7 +25,70 @@ export const getFileList = () => {
     if (fod?.length) {
         path1 = fod[0].uri.fsPath;
     }
-    console.log({path1});
+    // console.log({path1});
     traversePath(path.join(path1, '/src'));
     return targetFilesMap;
+};
+
+interface FileType {
+    fileType?: string,
+    list: string[];
+    length?: number;
+    number: number;
+}
+
+const fileTypeMap: Record<string, string> = {
+    ts: 'TypeScript',
+    js: 'JavaScript',
+};
+
+const getFileType = (type: string) => {
+    return fileTypeMap[type] || type || 'none';
+};
+
+const whiteList = ['vue'];
+
+export const getVueFileList = () => {
+    const fileList = getFileList();
+    const myList: FileType[] = [];
+    fileList.forEach(cur => {
+        const fileType = cur.split('.').pop() || '';
+        const hasType = myList.find(item => item.fileType === getFileType(fileType));
+        if (hasType) {
+            if (whiteList.includes(hasType.fileType!)) {
+                hasType.list.push(cur);
+            } else {
+                hasType.number += 1;
+            }
+        } else {
+            myList.push(
+                {
+                    fileType: getFileType(fileType),
+                    list: whiteList.includes(fileType) ? [cur] : [],
+                    number: whiteList.includes(fileType) ? 0 : 1,
+                }
+            );            
+        }
+    });
+    // console.log({ myList });
+    return myList;
+};
+
+export const getFileContent = () => {
+    const list = getVueFileList();
+    list.forEach(item => {
+        if (whiteList.includes(item.fileType!)) {
+            if (item.list.length) {
+                item.list.forEach(each => {
+                    const data = fs.readFileSync(each, 'utf8');
+                    if (data.includes('lang="ts"') || data.includes("lang='ts")) {
+                        item.number += 1;
+                    }
+                });
+            }
+            item.length = item.list.length;
+            item.list = [];
+        }
+    });
+    return list;
 };
