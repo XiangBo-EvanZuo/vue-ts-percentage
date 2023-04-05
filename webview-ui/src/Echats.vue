@@ -18,6 +18,7 @@ DataZoomSliderComponent
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 import { ref, provide, onMounted } from "vue";
+import { formatEchartsData } from "./utilities/echarts";
 
 use([
     CanvasRenderer,
@@ -32,6 +33,19 @@ use([
     DataZoomSliderComponent
 ]);
 
+onMounted(() => {
+    window.addEventListener('message', event => {
+        const message = event.data; // The JSON data our extension sent
+
+        switch (message.command) {
+            case 'TsAnalyze':
+                const { seriesList, legendList } = formatEchartsData(message.data)
+                option.value.xAxis.data = legendList;
+                option.value.series = seriesList;
+        }
+    });
+})
+
 provide(THEME_KEY, "dark");
 
 const option = ref({
@@ -42,7 +56,7 @@ const option = ref({
         trigger: 'axis'
     },
     legend: {
-        data: ['JavaScript', 'TypeScript', 'Video Ads', 'Direct', 'Search Engine']
+        data: ['JavaScript', 'TypeScript']
     },
     grid: {
         left: '3%',
@@ -67,33 +81,13 @@ const option = ref({
         {
             name: 'TypeScript',
             type: 'line',
-            // stack: 'Total',
-            data: [0, 10, 15, 20, 25, 30, 60]
+            data: [0, 10, 15, 20, 25, 30, 60],
         },
         {
             name: 'JavaScript',
             type: 'line',
-            // stack: 'Total',
             data: [100, 90, 85, 80, 75, 70, 40]
         },
-        // {
-        //     name: 'Video Ads',
-        //     type: 'line',
-        //     stack: 'Total',
-        //     data: [150, 232, 201, 154, 190, 330, 410]
-        // },
-        // {
-        //     name: 'Direct',
-        //     type: 'line',
-        //     stack: 'Total',
-        //     data: [320, 332, 301, 334, 390, 330, 320]
-        // },
-        // {
-        //     name: 'Search Engine',
-        //     type: 'line',
-        //     stack: 'Total',
-        //     data: [820, 932, 901, 934, 1290, 1330, 1320]
-        // }
     ],
     dataZoom: [
         {

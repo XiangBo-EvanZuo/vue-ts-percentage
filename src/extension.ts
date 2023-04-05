@@ -1,6 +1,6 @@
 import { commands, ExtensionContext, window, SnippetString, WebviewPanel } from "vscode";
 import { HelloWorldPanel } from "./panels/HelloWorldPanel";
-import { getFileContent, getVueFileList } from './utilities/file';
+import { getCurrentDayData } from './utilities/file';
 
 export function activate(context: ExtensionContext) {
   // Create the show hello world command
@@ -16,9 +16,7 @@ export function activate(context: ExtensionContext) {
     if (!editor) {
       return;
     }
-    let snippet: SnippetString = new SnippetString(JSON.stringify(getFileContent()));
-    const list = getFileContent();
-    console.log({list});
+    let snippet: SnippetString = new SnippetString(JSON.stringify(getCurrentDayData()));
     // 查找当前项目src/components下所有目标文件
     editor.insertSnippet(snippet);
   });

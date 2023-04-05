@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { PathLike } from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -91,4 +90,22 @@ export const getFileContent = () => {
         }
     });
     return list;
+};
+
+const getDate = () => {
+    var d = new Date();
+    var curr_date = d.getDate();
+    var curr_month = d.getMonth() + 1;
+    var curr_year = d.getFullYear();
+    String(curr_month).length < 2 ? (curr_month = 0 + curr_month) : curr_month;
+    String(curr_date).length < 2 ? (curr_date = 0 + curr_date) : curr_date;
+    var yyyyMMdd = curr_year + "-" + curr_month + "-" + curr_date;
+    return yyyyMMdd;
+};
+
+export const getCurrentDayData = () => {
+    return [{
+        date: getDate(),
+        list: getFileContent(),
+    }];
 };

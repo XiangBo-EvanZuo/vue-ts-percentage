@@ -1,6 +1,6 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString } from "vscode";
 import { getUri } from "../utilities/getUri";
-import { getFileContent, getFileList } from '../utilities/file';
+import { getCurrentDayData } from '../utilities/file';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -139,7 +139,7 @@ export class HelloWorldPanel {
             window.showInformationMessage(text);
             return;
           case 'TsAnalyze':
-            this._panel.webview.postMessage({ command: 'TsAnalyze', data: getFileContent() });
+            this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData() });
             return;
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
