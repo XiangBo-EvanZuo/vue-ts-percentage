@@ -69,23 +69,26 @@ export const getVueFileList = () => {
             );            
         }
     });
-    // console.log({ myList });
     return myList;
 };
 
 export const getFileContent = () => {
     const list = getVueFileList();
+    console.log({list});
     list.forEach(item => {
         if (whiteList.includes(item.fileType!)) {
             if (item.list.length) {
                 item.list.forEach(each => {
                     const data = fs.readFileSync(each, 'utf8');
                     if (data.includes('lang="ts"') || data.includes("lang='ts")) {
-                        item.number += 1;
+                        if (!item.length) {
+                            item.length = 0;
+                        }
+                        item.length += 1;
                     }
                 });
             }
-            item.length = item.list.length;
+            item.number = item.list.length;
             item.list = [];
         }
     });

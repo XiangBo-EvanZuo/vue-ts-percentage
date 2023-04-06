@@ -1,11 +1,12 @@
 <template>
-    <v-chart class="chart" :option="option" />
+    <v-chart class="chart" :option="pieOption" />
+    <v-chart @highlight="lineClick" class="chart" :option="option" />
 </template>
 
 <script lang="ts" setup>
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { LineChart } from "echarts/charts";
+import { LineChart, PieChart } from "echarts/charts";
 import {
     TitleComponent,
     TooltipComponent,
@@ -30,24 +31,100 @@ use([
     ToolboxComponent,
     DataZoomComponent,
     DataZoomInsideComponent,
-    DataZoomSliderComponent
+    DataZoomSliderComponent,
+    PieChart,
 ]);
+interface DataList {
+    fileType: string;
+    number: number;
+    length: number;
+}
+
+interface I {
+    date: string;
+    list: DataList[];
+}
+
+const lineClick = (e: any) => {
+    console.log({e})
+}
+
+const getPieOptionData = (dataList: DataList[]) => {
+    const vueOptions = dataList.find(item => item.fileType === 'vue');
+    if (vueOptions) {
+        const data =  [
+            {
+                name: 'js-vue',
+                value: vueOptions.number - vueOptions.length,
+            },
+            {
+                name: 'ts-vue',
+                value: vueOptions.length,
+            },
+        ];
+        pieOption.value.series[0].data = data;
+    }
+}
 
 onMounted(() => {
     window.addEventListener('message', event => {
         const message = event.data; // The JSON data our extension sent
-
         switch (message.command) {
             case 'TsAnalyze':
                 const { seriesList, legendList } = formatEchartsData(message.data)
                 option.value.xAxis.data = legendList;
                 option.value.series = seriesList;
+                const data = (message.data as I[])[0].list
+                getPieOptionData(data)
         }
     });
 })
 
 provide(THEME_KEY, "dark");
 
+const pieOption = ref({
+    tooltip: {
+        trigger: 'item'
+    },
+    legend: {
+        top: '5%',
+        left: 'center'
+    },
+    series: [
+        {
+            name: 'Access From',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+                borderRadius: 10,
+                borderColor: '#fff',
+                borderWidth: 2
+            },
+            label: {
+                show: false,
+                position: 'center'
+            },
+            emphasis: {
+                label: {
+                    show: true,
+                    fontSize: 40,
+                    fontWeight: 'bold'
+                }
+            },
+            labelLine: {
+                show: false
+            },
+            data: [
+                { value: 1048, name: 'Search Engine' },
+                { value: 735, name: 'Direct' },
+                { value: 580, name: 'Email' },
+                { value: 484, name: 'Union Ads' },
+                { value: 300, name: 'Video Ads' }
+            ]
+        }
+    ]
+})
 const option = ref({
     title: {
         text: '语言占比进度'
