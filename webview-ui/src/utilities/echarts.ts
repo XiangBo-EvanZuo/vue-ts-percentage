@@ -1,10 +1,10 @@
 import type { ValueOf } from "element-plus/es/components/table/src/table-column/defaults";
 import { ref
  } from "vue";
-interface I {
+export interface I {
     name: string;
     type: string;
-    data: any[];
+    data: number[];
 }
 export type DataList = ValueOf<Pick<ResultDataList, 'list'>>
 

@@ -16,7 +16,7 @@ export function activate(context: ExtensionContext) {
     if (!editor) {
       return;
     }
-    let snippet: SnippetString = new SnippetString(JSON.stringify(getCurrentDayData()));
+    let snippet: SnippetString = new SnippetString('12');
     // 查找当前项目src/components下所有目标文件
     editor.insertSnippet(snippet);
   });
