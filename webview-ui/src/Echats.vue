@@ -1,6 +1,17 @@
 <template>
+    {{ resultData }}
+    <el-date-picker
+        v-model="picker"
+        type="date"
+        value-format="YYYY-MM-DD"
+        placeholder="Pick a day"
+        :size="size"
+    />
+    <vscode-button @click="pickerChange">showTsAnalyze!</vscode-button>
+
     <v-chart class="chart" :option="pieOption" />
     <v-chart @highlight="lineClick" class="chart" :option="option" />
+
 </template>
 
 <script lang="ts" setup>
@@ -19,7 +30,12 @@ DataZoomSliderComponent
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 import { ref, provide, onMounted } from "vue";
-import { formatEchartsData } from "./utilities/echarts";
+import { formatEchartsData, type DataList, type ResultDataList } from "./utilities/echarts";
+import { dayjs } from "element-plus";
+import { vscode } from "./utilities/vscode";
+
+import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
+provideVSCodeDesignSystem().register(vsCodeButton());
 
 use([
     CanvasRenderer,
@@ -34,48 +50,76 @@ use([
     DataZoomSliderComponent,
     PieChart,
 ]);
-interface DataList {
-    fileType: string;
-    number: number;
-    length: number;
+
+const size = ref<'default' | 'large' | 'small'>('default')
+const picker = ref(dayjs().format('YYYY-MM-DD'));
+
+interface TEvent {
+    batch: Array<{
+        dataIndex: number
+    }>
+}
+const lineClick = (e: TEvent) => {
+    const index = e.batch[0].dataIndex
+    const data = resultData.value[index].list
+    console.log({index, data})
+    getPieOptionData(data)
 }
 
-interface I {
-    date: string;
-    list: DataList[];
+const pickerChange = (e: any) => {
+    vscode.postMessage({
+        command: "TsAnalyze",
+        text: "Hey there partner! 🤠",
+        date: picker.value,
+    });
 }
 
-const lineClick = (e: any) => {
-    console.log({e})
-}
 
-const getPieOptionData = (dataList: DataList[]) => {
-    const vueOptions = dataList.find(item => item.fileType === 'vue');
+const getPieOptionData = (dataList: DataList) => {
+    const vueOptions = dataList.find(item => item.fileType === 'vue')!;
     if (vueOptions) {
         const data =  [
             {
                 name: 'js-vue',
-                value: vueOptions.number - vueOptions.length,
+                value: vueOptions.number - vueOptions.length!,
             },
             {
                 name: 'ts-vue',
                 value: vueOptions.length,
             },
         ];
-        pieOption.value.series[0].data = data;
+        pieOption.value.series[0].data = data as {value: number, name: string}[];
     }
 }
+const resultData = ref<ResultDataList[]>([]);
 
 onMounted(() => {
     window.addEventListener('message', event => {
         const message = event.data; // The JSON data our extension sent
+        let result
         switch (message.command) {
             case 'TsAnalyze':
-                const { seriesList, legendList } = formatEchartsData(message.data)
+                const currentData: ResultDataList[] = message.data;
+                // 从localstorage获取历史
+                const list: ResultDataList[] = JSON.parse(localStorage.getItem('list') || '[]');
+                const hasCurrentDayDataIndex = list.findIndex(item => item.date === currentData[0].date)
+                if (hasCurrentDayDataIndex !== -1) {
+                    list.splice(hasCurrentDayDataIndex, 1, currentData[0])
+                    result = list;
+                } else {
+                    result = list.concat(currentData) 
+                }
+                result = result.sort((before, aftter) => before.date > aftter.date ? 1 : -1)
+                // 合成list
+                // show list
+                // 保存localstorage
+                const { seriesList, legendList } = formatEchartsData(result)
                 option.value.xAxis.data = legendList;
                 option.value.series = seriesList;
-                const data = (message.data as I[])[0].list
+                const data = result[0].list
                 getPieOptionData(data)
+                resultData.value = result
+                localStorage.setItem('list', JSON.stringify(result))
         }
     });
 })

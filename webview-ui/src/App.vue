@@ -29,13 +29,6 @@ function handleHowdyClick() {
   });
 }
 
-function tsAnalyze() {
-  vscode.postMessage({
-    command: "TsAnalyze",
-    text: "Hey there partner! 🤠",
-  });
-}
-
 const data = ref(0);
 const showTsAnalyze = ref(false);
 const dataList = ref([]);
@@ -65,7 +58,6 @@ onMounted(() => {
     <div v-if="showTsAnalyze">showTsAnalyze</div>
     <Echats></Echats>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
-    <vscode-button @click="tsAnalyze">showTsAnalyze!</vscode-button>
   </main>
 </template>
 

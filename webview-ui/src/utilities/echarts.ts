@@ -1,3 +1,4 @@
+import type { ValueOf } from "element-plus/es/components/table/src/table-column/defaults";
 import { ref
  } from "vue";
 interface I {
@@ -5,17 +6,19 @@ interface I {
     type: string;
     data: any[];
 }
-interface DataList {
+export type DataList = ValueOf<Pick<ResultDataList, 'list'>>
+
+export interface ResultDataList {
     date: string;
     list: Array<{
         fileType: string;
-        list: never[];
+        list: string[];
         number: number;
         length?: undefined;
     }>
 }
 
-export const formatEchartsData = (dataList: DataList[]) => {
+export const formatEchartsData = (dataList: ResultDataList[]) => {
     const legendList: string[] = []
     const seriesList = ref<I[]>([])
     dataList.forEach(item => {
