@@ -75,7 +75,7 @@ const pickerChange = () => {
     });
 }
 
-pickerChange();
+// pickerChange();
 
 
 const getPieOptionData = (dataList: DataList) => {
