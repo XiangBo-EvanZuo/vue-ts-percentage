@@ -103,46 +103,6 @@ const resultData = ref<ResultDataList[]>([]);
 //     })
 // }
 
-onMounted(() => {
-    window.addEventListener('message', event => {
-        const message = event.data; // The JSON data our extension sent
-        let result
-        switch (message.command) {
-            case 'TsAnalyze':
-                const currentData: ResultDataList[] = message.data;
-                // 从localstorage获取历史
-                const list: ResultDataList[] = JSON.parse(localStorage.getItem('list') || '[]');
-                const hasCurrentDayDataIndex = list.findIndex(item => item.date === currentData[0].date)
-                if (hasCurrentDayDataIndex !== -1) {
-                    list.splice(hasCurrentDayDataIndex, 1, currentData[0])
-                    result = list;
-                } else {
-                    result = list.concat(currentData) 
-                }
-                result = result.sort((before, aftter) => before.date > aftter.date ? 1 : -1)
-                localStorage.setItem('list', JSON.stringify(result))
-
-                // 合成list
-                // show list
-                // 保存localstorage
-                const showResult: ResultDataList[]  = JSON.parse(JSON.stringify(result));
-                showResult.forEach(item => {
-                    const summary = item.list.reduce((acc, cur) => acc + cur.number, 0);
-                    item.list.forEach(each => {
-                        each.number = Math.round((each.number / summary) * 100)
-                    })
-                })
-                const { seriesList, legendList } = formatEchartsData(showResult)
-                option.value.xAxis.data = legendList;
-                option.value.series = seriesList;
-                option.value.legend.data = seriesList.map(item => item.name)
-                const data = result[0].list
-                getPieOptionData(data)
-                resultData.value = result
-        }
-    });
-})
-
 provide(THEME_KEY, "dark");
 
 const pieOption = ref({
@@ -241,15 +201,57 @@ const option = ref({
         }
     ],
 });
-
+const setLineData = (currentData: ResultDataList[], setLocalStorage: boolean = true) => {
+    let result;
+    // 从localstorage获取历史
+    const list: ResultDataList[] = JSON.parse(localStorage.getItem('list') || '[]');
+    const hasCurrentDayDataIndex = list.findIndex(item => item.date === currentData[0]?.date)
+    if (hasCurrentDayDataIndex !== -1) {
+        list.splice(hasCurrentDayDataIndex, 1, currentData[0])
+        result = list;
+    } else {
+        result = list.concat(currentData) 
+    }
+    result = result.sort((before, aftter) => before.date > aftter.date ? 1 : -1)
+    // 合成list
+    // show list
+    // 保存localstorage
+    const showResult: ResultDataList[]  = JSON.parse(JSON.stringify(result));
+    showResult.forEach(item => {
+        const summary = item.list.reduce((acc, cur) => acc + cur.number, 0);
+        item.list.forEach(each => {
+            each.number = Math.round((each.number / summary) * 100)
+        })
+    })
+    const { seriesList, legendList } = formatEchartsData(showResult)
+    option.value.xAxis.data = legendList;
+    option.value.series = seriesList;
+    option.value.legend.data = seriesList.map(item => item.name)
+    const data = result[0].list
+    getPieOptionData(data)
+    resultData.value = result
+    if (setLocalStorage) {
+        localStorage.setItem('list', JSON.stringify(result))
+    }
+}
 onMounted(() => {
+    // window.addEventListener('message', event => {
+    //     const message = event.data; // The JSON data our extension sent
+    //     switch (message.command) {
+    //         case 'changeEchart':
+    //             option.value.series[0].data = [12, 132, 101, 134, 90, 230, 2100];
+    //     }
+    // });
+
     window.addEventListener('message', event => {
         const message = event.data; // The JSON data our extension sent
         switch (message.command) {
-            case 'changeEchart':
-                option.value.series[0].data = [12, 132, 101, 134, 90, 230, 2100];
+            case 'TsAnalyze':
+                const currentData: ResultDataList[] = message.data;
+                setLineData(currentData);
         }
     });
+    setLineData([], false);
 })
 </script>
 

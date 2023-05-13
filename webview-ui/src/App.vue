@@ -53,8 +53,6 @@ onMounted(() => {
 <template>
   <main>
     <h1>Hello world!</h1>
-    <h1>data: {{ data }}</h1>
-    <h1>dataList:{{ dataList }}</h1>
     <div v-if="showTsAnalyze">showTsAnalyze</div>
     <Echats></Echats>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
