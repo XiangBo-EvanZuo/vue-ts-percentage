@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.0.0",
+    "axios": "^1.4.0",
     "dayjs": "^1.11.7",
     "echarts": "^5.4.2",
     "element-plus": "^2.3.3",

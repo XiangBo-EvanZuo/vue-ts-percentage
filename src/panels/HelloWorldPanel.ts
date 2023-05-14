@@ -1,6 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getCurrentDayData } from '../utilities/file';
+import { getAxiosData } from './../utilities/axios';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -129,7 +130,7 @@ export class HelloWorldPanel {
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: any) => {
+      async (message: any) => {
         const command = message.command;
         const text = message.text;
 
@@ -141,6 +142,10 @@ export class HelloWorldPanel {
           case 'TsAnalyze':
             this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData(message.date) });
             return;
+          case 'AxiosLogin':
+            const res = await getAxiosData();
+            console.log({res});
+            this._panel.webview.postMessage({ command: 'AxiosLogin', data: { demo: 2, data: res.data } });
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
         }

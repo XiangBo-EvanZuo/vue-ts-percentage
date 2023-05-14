@@ -2,7 +2,9 @@
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
 import { onMounted, ref } from "vue";
-import Echats from './Echats.vue'
+import Echats from './Echats.vue';
+import Login from './login.vue';
+
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
 // syntax below.
@@ -55,6 +57,7 @@ onMounted(() => {
     <h1>Hello world!</h1>
     <div v-if="showTsAnalyze">showTsAnalyze</div>
     <Echats></Echats>
+    <Login/>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
   </main>
 </template>
