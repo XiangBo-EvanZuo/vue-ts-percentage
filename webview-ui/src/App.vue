@@ -32,8 +32,9 @@ function handleHowdyClick() {
 }
 const workSpace = ref('');
 const data = ref(0);
-const showTsAnalyze = ref(false);
 const dataList = ref([]);
+const logined = ref(false);
+
 onMounted(() => {
   data.value = 10;
   window.addEventListener('message', event => {
@@ -44,9 +45,9 @@ onMounted(() => {
       case 'refactor':
         data.value = 200;
       case 'TsAnalyze':
-        showTsAnalyze.value = true;
         dataList.value = message.data;
-        workSpace.value = message.workSpace;
+      case 'Logined':
+        workSpace.value = message.data.workSpace;
     }
   });
 })
@@ -56,9 +57,8 @@ onMounted(() => {
 <template>
   <main>
     <h1>{{ workSpace }}</h1>
-    <div v-if="showTsAnalyze">showTsAnalyze</div>
-    <Echats></Echats>
-    <Login/>
+    <Echats v-if="logined"/>
+    <Login v-show="!logined" v-model="logined"/>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
   </main>
 </template>

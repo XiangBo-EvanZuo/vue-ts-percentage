@@ -1,7 +1,8 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString, workspace } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getCurrentDayData } from '../utilities/file';
-import { getAxiosData } from './../utilities/axios';
+import { getAxiosData, getLoginData } from './../utilities/axios';
+
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -140,13 +141,15 @@ export class HelloWorldPanel {
             window.showInformationMessage(text);
             return;
           case 'TsAnalyze':
-            const workSpace =  workspace.workspaceFolders!.length ?  workspace.workspaceFolders![0].name : 'init work space';
-            this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData(message.date), workSpace });
+            this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData(message.date)});
             return;
           case 'AxiosLogin':
             const res = await getAxiosData();
             console.log({res});
             this._panel.webview.postMessage({ command: 'AxiosLogin', data: { demo: 2, data: res.data } });
+          case 'Logined':
+            const workSpace =  workspace.workspaceFolders!.length ?  workspace.workspaceFolders![0].name : 'init work space';
+            this._panel.webview.postMessage({ command: 'Logined', data: getLoginData(workSpace) });
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
         }

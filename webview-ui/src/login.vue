@@ -7,7 +7,7 @@
             <el-form-item label="password">
                 <el-input v-model="password"></el-input>
             </el-form-item>
-            <vscode-button @click="login">Howdy!</vscode-button>
+            <vscode-button @click="login">Login!</vscode-button>
         </el-form>
         <div v-html="ssrContent"></div>
     </div>
@@ -18,6 +18,10 @@ import { vscode } from "./utilities/vscode";
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 provideVSCodeDesignSystem().register(vsCodeButton());
 
+const props = defineProps<{
+    modelValue: boolean;
+}>()
+const emits = defineEmits(['update:modelValue']);
 const username = ref('');
 const password = ref('');
 
@@ -35,6 +39,14 @@ const login = () => {
             case 'AxiosLogin':
                 console.log({message})
                 ssrContent.value = message.data.data;
+        }
+    });
+    emits('update:modelValue', true);
+    // Logined
+    vscode.postMessage({
+        command: "Logined",
+        data: {
+            username: 'demo',
         }
     });
 }
