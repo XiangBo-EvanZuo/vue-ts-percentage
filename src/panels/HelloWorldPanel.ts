@@ -1,4 +1,4 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString } from "vscode";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString, workspace } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getCurrentDayData } from '../utilities/file';
 import { getAxiosData } from './../utilities/axios';
@@ -140,7 +140,8 @@ export class HelloWorldPanel {
             window.showInformationMessage(text);
             return;
           case 'TsAnalyze':
-            this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData(message.date) });
+            const workSpace =  workspace.workspaceFolders!.length ?  workspace.workspaceFolders![0].name : 'init work space';
+            this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData(message.date), workSpace });
             return;
           case 'AxiosLogin':
             const res = await getAxiosData();

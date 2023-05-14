@@ -22,6 +22,7 @@ export const getFileList = () => {
     let path1 = '';
     const fod = vscode.workspace.workspaceFolders;
     if (fod?.length) {
+        console.log({name: fod[0].name});
         path1 = fod[0].uri.fsPath;
     }
     // console.log({path1});

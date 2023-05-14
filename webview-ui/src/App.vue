@@ -30,7 +30,7 @@ function handleHowdyClick() {
     text: "Hey there partner! 🤠",
   });
 }
-
+const workSpace = ref('');
 const data = ref(0);
 const showTsAnalyze = ref(false);
 const dataList = ref([]);
@@ -39,13 +39,14 @@ onMounted(() => {
   window.addEventListener('message', event => {
     const message = event.data; // The JSON data our extension sent
     data.value = 20;
-    
+    console.log({message})
     switch (message.command) {
       case 'refactor':
         data.value = 200;
       case 'TsAnalyze':
         showTsAnalyze.value = true;
         dataList.value = message.data;
+        workSpace.value = message.workSpace;
     }
   });
 })
@@ -54,7 +55,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <h1>Hello world!</h1>
+    <h1>{{ workSpace }}</h1>
     <div v-if="showTsAnalyze">showTsAnalyze</div>
     <Echats></Echats>
     <Login/>
