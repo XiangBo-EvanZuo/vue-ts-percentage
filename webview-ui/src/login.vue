@@ -27,12 +27,12 @@ const password = ref('');
 
 const ssrContent = ref('');
 const login = () => {
-    vscode.postMessage({
-        command: "AxiosLogin",
-        data: {
-            demo: 1,
-        }
-    });
+    // vscode.postMessage({
+    //     command: "AxiosLogin",
+    //     data: {
+    //         demo: 1,
+    //     }
+    // });
     window.addEventListener('message', event => {
         const message = event.data; // The JSON data our extension sent
         switch (message.command) {
