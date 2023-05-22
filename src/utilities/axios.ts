@@ -1,18 +1,26 @@
 import axios from 'axios';
+import * as FormData from 'form-data';
+import { WorkspaceFolder } from 'vscode';
 export const getAxiosData = () => {
     return axios.get('https://tooltt.com/json2typescript/');
 };
-export const getLoginData = async (workSpace: string) => {
-    const res = await axios.post('http://localhost:9201/resource/project/list', {
-        projectId: '1',
-    }, {
+export const getLoginData = async (workSpace: readonly WorkspaceFolder[] | undefined, data: { username: string; password: string }) => {
+    const requestData = new FormData();
+    requestData.append("username", data.username);
+    requestData.append("password", data.password);
+    requestData.append("grant_type", 'password');
+    requestData.append("client_id", 'client-app');
+    requestData.append("client_secret", '123456');
+    const res = await axios.post('http://localhost:9201/oauth/token', requestData, {
         headers: {
-            'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsib2F1dGgyLXJlc291cmNlIl0sInVzZXJfbmFtZSI6ImFkbWluIiwic2NvcGUiOlsiYWxsIl0sImlkIjoxLCJleHAiOjE2ODQ2ODE5NTAsImF1dGhvcml0aWVzIjpbIlVTRVIiLCJBRE1JTiJdLCJqdGkiOiIwNWM2YzhiZi03MjllLTQxMWUtYWM1OS0yMzJkOWM3MjIyNTQiLCJjbGllbnRfaWQiOiJjbGllbnQtYXBwIn0.RZbfaGkpW8wFZxDUiZ7MT2rNUd7PFgxGxyV6JBu-PW1nvsyFcpkw3pPdfVP028N8p_klxGEKwTNjCXaVdQjxTLNcAIEM48VddwulmtPcCs-asgeyiRp7MWR_YSoucbKiPp0OS_S2xX6jWSlzV6rjvGf6nsHsrkniE3EvOxi6gI9djxaUEa7i_jN-KknvnnmOYqXmqw0DRtLJRfV0dwk3OFg1gLW5pJO3a1K8DxHKDNULMtc2TB_tthxa-pv-WlqIyofOzIXQqBCaSjM8H1CPFc9xNVgPKff-KhTP9oEKx0p7Cqz7GQE4NvEehGraqtlCvniE7FqyIClMCdADNMctqg',
+            "Content-Type": "application/x-www-form-urlencoded"
         }
     })
-    console.warn({res: res.data.data})
+    if (res.data.code !== 200) {
+        throw res.data;
+    }
     return {
-        workSpace,
+        workSpace: workSpace || [],
         data: {res: res.data.data},
     };
 };

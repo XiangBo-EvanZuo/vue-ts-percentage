@@ -4,6 +4,7 @@ import { vscode } from "./utilities/vscode";
 import { onMounted, ref } from "vue";
 import Echats from './Echats.vue';
 import Login from './login.vue';
+import type { IWorkSpaceOptions } from './type';
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -30,8 +31,10 @@ function handleHowdyClick() {
     text: "Hey there partner! 🤠",
   });
 }
-const workSpace = ref('');
+
+const workSpace = ref<IWorkSpaceOptions[]>([]);
 const data = ref(0);
+const workSpaceIndex = ref(0);
 const dataList = ref([]);
 const logined = ref(false);
 
@@ -56,7 +59,14 @@ onMounted(() => {
 
 <template>
   <main>
-    <h1>{{ workSpace }}</h1>
+    <el-select v-if="logined" v-model="workSpaceIndex" class="m-2" placeholder="Select" size="small">
+      <el-option
+        v-for="item in workSpace"
+        :key="item.index"
+        :label="item.name"
+        :value="item.index"
+      />
+    </el-select>
     <Echats v-if="logined"/>
     <Login v-show="!logined" v-model="logined"/>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>

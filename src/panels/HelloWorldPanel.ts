@@ -146,9 +146,14 @@ export class HelloWorldPanel {
           case 'AxiosLogin':
             this._panel.webview.postMessage({ command: 'AxiosLogin', data: { demo: 2, data: 1 } });
           case 'Logined':
-            const workSpace =  workspace.workspaceFolders!.length ?  workspace.workspaceFolders![0].name : 'init work space';
-            const loginData = await getLoginData(workSpace);
-            this._panel.webview.postMessage({ command: 'Logined', data: loginData });
+            console.info('Logined')
+            const workSpace =  workspace.workspaceFolders;
+            try {
+              const loginData = await getLoginData(workSpace, message.data);
+              this._panel.webview.postMessage({ command: 'Logined', data: loginData });
+            } catch (err) {
+              this._panel.webview.postMessage({ command: 'LoginedFailed', data: err });
+            }
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
         }

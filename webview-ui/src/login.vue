@@ -9,12 +9,12 @@
             </el-form-item>
             <vscode-button @click="login">Login!</vscode-button>
         </el-form>
-        <div v-html="ssrContent"></div>
     </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { vscode } from "./utilities/vscode";
+import { ElMessage } from 'element-plus';
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 provideVSCodeDesignSystem().register(vsCodeButton());
 
@@ -25,7 +25,6 @@ const emits = defineEmits(['update:modelValue']);
 const username = ref('');
 const password = ref('');
 
-const ssrContent = ref('');
 const login = () => {
     // vscode.postMessage({
     //     command: "AxiosLogin",
@@ -33,23 +32,36 @@ const login = () => {
     //         demo: 1,
     //     }
     // });
-    window.addEventListener('message', event => {
-        const message = event.data; // The JSON data our extension sent
-        switch (message.command) {
-            case 'AxiosLogin':
-                console.log({message})
-                ssrContent.value = message.data.data;
-        }
-    });
-    emits('update:modelValue', true);
     // Logined
     vscode.postMessage({
         command: "Logined",
         data: {
-            username: 'demo',
+            username: username.value,
+            password: password.value,
         }
     });
 }
+onMounted(() => {
+    window.addEventListener('message', event => {
+        const message = event.data; // The JSON data our extension sent
+        switch (message.command) {
+            case 'Logined':
+                emits('update:modelValue', true);
+                ElMessage({
+                    type: 'success',
+                    message: '登录成功',
+                });
+            case 'LoginedFailed':
+                console.log(message)
+                if (message.command === 'LoginedFailed') {
+                        ElMessage({
+                            type: 'error',
+                            message: message.data.message,
+                        });
+                }
+        }
+    });
+})
 </script>
 <style lang="less">
     
