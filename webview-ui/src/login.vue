@@ -22,8 +22,8 @@ const props = defineProps<{
     modelValue: boolean;
 }>()
 const emits = defineEmits(['update:modelValue']);
-const username = ref('');
-const password = ref('');
+const username = ref('admin');
+const password = ref('123456');
 
 const login = () => {
     // vscode.postMessage({
