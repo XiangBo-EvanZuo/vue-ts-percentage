@@ -55,6 +55,9 @@ use([
 
 const size = ref<'default' | 'large' | 'small'>('default')
 const picker = ref(dayjs().format('YYYY-MM-DD'));
+const props = defineProps<{
+    token: string;
+}>();
 
 interface TEvent {
     batch: Array<{

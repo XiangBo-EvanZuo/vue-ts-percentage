@@ -52,12 +52,13 @@ onMounted(() => {
                     message: '登录成功',
                 });
             case 'LoginedFailed':
-                console.log(message)
                 if (message.command === 'LoginedFailed') {
-                        ElMessage({
-                            type: 'error',
-                            message: message.data.message,
-                        });
+                    ElMessage({
+                        type: 'error',
+                        message: message.data.message,
+                    });
+                    localStorage.setItem('token', '');
+                    localStorage.setItem('refreshToken', ''); 
                 }
         }
     });

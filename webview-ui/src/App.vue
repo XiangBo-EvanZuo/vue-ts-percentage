@@ -37,6 +37,7 @@ const data = ref(0);
 const workSpaceIndex = ref(0);
 const dataList = ref([]);
 const logined = ref(false);
+const token = ref('');
 
 onMounted(() => {
   data.value = 10;
@@ -51,6 +52,10 @@ onMounted(() => {
         dataList.value = message.data;
       case 'Logined':
         workSpace.value = message.data.workSpace;
+        localStorage.setItem('token', message.data.data.res.token);
+        localStorage.setItem('refreshToken', message.data.data.res.refreshToken);
+        token.value = message.data.data.res.token;
+        console.warn({token})
     }
   });
 })
@@ -67,7 +72,7 @@ onMounted(() => {
         :value="item.index"
       />
     </el-select>
-    <Echats v-if="logined"/>
+    <Echats :token="token" v-if="logined"/>
     <Login v-show="!logined" v-model="logined"/>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
   </main>
