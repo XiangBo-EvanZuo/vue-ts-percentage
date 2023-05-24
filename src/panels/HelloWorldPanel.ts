@@ -1,7 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString, workspace } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getCurrentDayData } from '../utilities/file';
-import { getAxiosData, getLoginData } from './../utilities/axios';
+import { getAxiosData, getLoginData, getProjectFileList, getProjectList } from './../utilities/axios';
 
 
 /**
@@ -143,17 +143,25 @@ export class HelloWorldPanel {
           case 'TsAnalyze':
             this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData(message.date)});
             return;
-          case 'AxiosLogin':
-            this._panel.webview.postMessage({ command: 'AxiosLogin', data: { demo: 2, data: 1 } });
           case 'Logined':
-            console.info('Logined')
             const workSpace =  workspace.workspaceFolders;
             try {
               const loginData = await getLoginData(workSpace, message.data);
               this._panel.webview.postMessage({ command: 'Logined', data: loginData });
+              const projectList = await getProjectList(loginData.data.res.token);
+              this._panel.webview.postMessage({ command: 'ProjectList', data: projectList.data.data });
+              if (projectList.data.data.length > 0) {
+                const projectFileList = await getProjectFileList(loginData.data.res.token, projectList.data.data[0].id);
+                this._panel.webview.postMessage({ command: 'GetProjectFileList', data: projectFileList.data.data });
+              }
             } catch (err) {
               this._panel.webview.postMessage({ command: 'LoginedFailed', data: err });
             }
+          case 'GetProjectFileList':
+              if (message.command === 'GetProjectFileList') {
+                const projectFileList = await getProjectFileList(message.token, message.id);
+                this._panel.webview.postMessage({ command: 'GetProjectFileList', data: projectFileList.data.data });
+              }
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
         }

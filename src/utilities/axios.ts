@@ -15,7 +15,7 @@ export const getLoginData = async (workSpace: readonly WorkspaceFolder[] | undef
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         }
-    })
+    });
     if (res.data.code !== 200) {
         throw res.data;
     }
@@ -23,4 +23,28 @@ export const getLoginData = async (workSpace: readonly WorkspaceFolder[] | undef
         workSpace: workSpace || [],
         data: {res: res.data.data},
     };
+};
+
+export const getProjectList = async (token: string) => {
+    const res = await axios.post('http://localhost:9201/resource/project/userProjectList', {}, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    });
+    console.log({res1: res});
+    return res;
+};
+
+export const getProjectFileList = async (token: string, projectId: number) => {
+    console.warn({token, projectId});
+    const params = {
+        projectId,
+    };
+    const res = await axios.post('http://localhost:9201/resource/project/list', params, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    });
+    console.log({res2: res});
+    return res;
 };

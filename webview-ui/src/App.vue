@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Echats from './Echats.vue';
 import Login from './login.vue';
 import type { IWorkSpaceOptions } from './type';
@@ -32,10 +32,17 @@ function handleHowdyClick() {
   });
 }
 
-const workSpace = ref<IWorkSpaceOptions[]>([]);
+const projectList = ref<IWorkSpaceOptions[]>([]);
 const data = ref(0);
-const workSpaceIndex = ref(0);
-const dataList = ref([]);
+const currentProjectIndex = ref(0);
+const currentProject = computed(() => projectList.value[currentProjectIndex.value]);
+const changeProject = () => {
+  vscode.postMessage({
+    command: "GetProjectFileList",
+    id: currentProject.value.id,
+    token: localStorage.getItem("token"),
+  });
+}
 const logined = ref(false);
 const token = ref('');
 
@@ -48,14 +55,12 @@ onMounted(() => {
     switch (message.command) {
       case 'refactor':
         data.value = 200;
-      case 'TsAnalyze':
-        dataList.value = message.data;
       case 'Logined':
-        workSpace.value = message.data.workSpace;
         localStorage.setItem('token', message.data.data.res.token);
         localStorage.setItem('refreshToken', message.data.data.res.refreshToken);
         token.value = message.data.data.res.token;
-        console.warn({token})
+      case 'ProjectList':
+          projectList.value = message.data;
     }
   });
 })
@@ -64,12 +69,12 @@ onMounted(() => {
 
 <template>
   <main>
-    <el-select v-if="logined" v-model="workSpaceIndex" class="m-2" placeholder="Select" size="small">
+    <el-select v-if="logined" v-model="currentProjectIndex" @change="changeProject" class="m-2" placeholder="Select" size="small">
       <el-option
-        v-for="item in workSpace"
-        :key="item.index"
-        :label="item.name"
-        :value="item.index"
+        v-for="(item, index) in projectList"
+        :key="index"
+        :label="item.projectName"
+        :value="index"
       />
     </el-select>
     <Echats :token="token" v-if="logined"/>

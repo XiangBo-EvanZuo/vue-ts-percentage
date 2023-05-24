@@ -1,4 +1,5 @@
 export interface IWorkSpaceOptions {
-    name: string;
+    projectName: string;
     index: number;
+    id: number;
 }

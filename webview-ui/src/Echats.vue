@@ -252,6 +252,9 @@ onMounted(() => {
             case 'TsAnalyze':
                 const currentData: ResultDataList[] = message.data;
                 setLineData(currentData);
+            case 'GetProjectFileList':
+                const currentData2: ResultDataList[] = message.data;
+                setLineData(currentData2);
         }
     });
     setLineData([], false);
