@@ -36,7 +36,6 @@ export const formatEchartsData = (dataList: ResultDataList[]) => {
                     data: [each.number],
                 });
             }
-
         })
     })
     return {

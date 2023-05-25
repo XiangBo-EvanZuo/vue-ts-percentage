@@ -37,6 +37,7 @@ import { dayjs } from "element-plus";
 import { vscode } from "./utilities/vscode";
 
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
+import { useGetFormatList } from "./utilities/hook";
 provideVSCodeDesignSystem().register(vsCodeButton());
 
 use([
@@ -65,9 +66,13 @@ interface TEvent {
     }>
 }
 const lineClick = (e: TEvent) => {
-    const index = e.batch[0].dataIndex
-    const data = resultData.value[index].list
-    getPieOptionData(data)
+    if (e.batch) {
+        const index = e.batch[0].dataIndex
+        const data = resultData.value[index]?.list
+        if (data) {
+            getPieOptionData(data)
+        }
+    }
 }
 
 const pickerChange = () => {
@@ -204,10 +209,13 @@ const option = ref({
         }
     ],
 });
-const setLineData = (currentData: ResultDataList[], setLocalStorage: boolean = true) => {
+const currentList = ref<ResultDataList[]>([]);
+
+const setLineData = (currentData: ResultDataList[]) => {
     let result;
     // 从localstorage获取历史
-    const list: ResultDataList[] = JSON.parse(localStorage.getItem('list') || '[]');
+    const list: ResultDataList[] = currentList.value;
+    console.log({currentList: currentList.value})
     const hasCurrentDayDataIndex = list.findIndex(item => item.date === currentData[0]?.date)
     if (hasCurrentDayDataIndex !== -1) {
         list.splice(hasCurrentDayDataIndex, 1, currentData[0])
@@ -218,25 +226,28 @@ const setLineData = (currentData: ResultDataList[], setLocalStorage: boolean = t
     result = result.sort((before, aftter) => before.date > aftter.date ? 1 : -1)
     // 合成list
     // show list
-    // 保存localstorage
-    const showResult: ResultDataList[]  = JSON.parse(JSON.stringify(result));
+
+    const { getFormatList } = useGetFormatList(result)
+    const showResult = getFormatList();
+
     showResult.forEach(item => {
         const summary = item.list.reduce((acc, cur) => acc + cur.number, 0);
         item.list.forEach(each => {
             each.number = Math.round((each.number / summary) * 100)
         })
     })
+    console.warn({showResult})
     const { seriesList, legendList } = formatEchartsData(showResult)
+    console.warn({seriesList, legendList})
+    
     option.value.xAxis.data = legendList;
     option.value.series = seriesList;
     option.value.legend.data = seriesList.map(item => item.name)
     const data = result[0].list
     getPieOptionData(data)
     resultData.value = result
-    if (setLocalStorage) {
-        localStorage.setItem('list', JSON.stringify(result))
-    }
 }
+
 onMounted(() => {
     // window.addEventListener('message', event => {
     //     const message = event.data; // The JSON data our extension sent
@@ -248,16 +259,16 @@ onMounted(() => {
 
     window.addEventListener('message', event => {
         const message = event.data; // The JSON data our extension sent
-        switch (message.command) {
-            case 'TsAnalyze':
-                const currentData: ResultDataList[] = message.data;
-                setLineData(currentData);
-            case 'GetProjectFileList':
-                const currentData2: ResultDataList[] = message.data;
-                setLineData(currentData2);
+        if (message.command === 'TsAnalyze') {
+            const currentData: ResultDataList[] = message.data;
+            setLineData(currentData);
+            currentList.value = currentList.value.concat(currentData);
+        } else if (message.command === 'GetProjectFileList') {
+            const currentData2: ResultDataList[] = message.data;
+            currentList.value = currentData2;
+            setLineData(currentData2);
         }
     });
-    setLineData([], false);
 })
 </script>
 
