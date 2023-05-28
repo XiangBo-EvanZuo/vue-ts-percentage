@@ -77,7 +77,7 @@ onMounted(() => {
         :value="index"
       />
     </el-select>
-    <Echats :token="token" v-if="logined"/>
+    <Echats :currentProject="currentProject" :token="token" v-if="logined"/>
     <Login v-show="!logined" v-model="logined"/>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
   </main>

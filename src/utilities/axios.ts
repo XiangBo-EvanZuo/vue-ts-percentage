@@ -16,6 +16,7 @@ export const getLoginData = async (workSpace: readonly WorkspaceFolder[] | undef
             "Content-Type": "application/x-www-form-urlencoded"
         }
     });
+    console.log({res666: res});
     if (res.data.code !== 200) {
         throw res.data;
     }
@@ -46,5 +47,15 @@ export const getProjectFileList = async (token: string, projectId: number) => {
         }
     });
     console.log({res2: res});
+    return res;
+};
+export const axiosSaveDateFileInfo = async (data: any, token: string) => {
+    console.log({data, token});
+    const res = await axios.post('http://localhost:9201/resource/project/save', data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    });
+    console.log({res9: res});
     return res;
 };

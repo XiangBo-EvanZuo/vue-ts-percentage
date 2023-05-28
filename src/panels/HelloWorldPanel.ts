@@ -1,7 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString, workspace } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getCurrentDayData } from '../utilities/file';
-import { getAxiosData, getLoginData, getProjectFileList, getProjectList } from './../utilities/axios';
+import { axiosSaveDateFileInfo, getAxiosData, getLoginData, getProjectFileList, getProjectList } from './../utilities/axios';
 
 
 /**
@@ -134,16 +134,11 @@ export class HelloWorldPanel {
       async (message: any) => {
         const command = message.command;
         const text = message.text;
-
-        switch (command) {
-          case "hello":
-            // Code that should run in response to the hello message command
+        if (command === 'hello') {
             window.showInformationMessage(text);
-            return;
-          case 'TsAnalyze':
+        } else if (command === 'TsAnalyze') {
             this._panel.webview.postMessage({ command: 'TsAnalyze', data: getCurrentDayData(message.date)});
-            return;
-          case 'Logined':
+        } else if (command === 'Logined') {
             const workSpace =  workspace.workspaceFolders;
             try {
               const loginData = await getLoginData(workSpace, message.data);
@@ -157,13 +152,13 @@ export class HelloWorldPanel {
             } catch (err) {
               this._panel.webview.postMessage({ command: 'LoginedFailed', data: err });
             }
-          case 'GetProjectFileList':
+        } else if (command === 'GetProjectFileList') {
               if (message.command === 'GetProjectFileList') {
                 const projectFileList = await getProjectFileList(message.token, message.id);
                 this._panel.webview.postMessage({ command: 'GetProjectFileList', data: projectFileList.data.data });
               }
-          // Add more switch case statements here as more webview message commands
-          // are created within the webview context (i.e. inside media/main.js)
+        } else if (command === 'SaveDateFileInfo') {
+            axiosSaveDateFileInfo(message.data, message.token);
         }
       },
       undefined,

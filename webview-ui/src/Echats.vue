@@ -31,13 +31,14 @@ import {
 } from "echarts/components";
 
 import VChart, { THEME_KEY } from "vue-echarts";
-import { ref, provide, onMounted } from "vue";
+import { ref, provide, onMounted, type Ref } from "vue";
 import { formatEchartsData, type DataList, type ResultDataList, type I } from "./utilities/echarts";
 import { dayjs } from "element-plus";
 import { vscode } from "./utilities/vscode";
 
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 import { useGetFormatList } from "./utilities/hook";
+import type { ValueOf } from "element-plus/es/components/table/src/table-column/defaults";
 provideVSCodeDesignSystem().register(vsCodeButton());
 
 use([
@@ -58,6 +59,7 @@ const size = ref<'default' | 'large' | 'small'>('default')
 const picker = ref(dayjs().format('YYYY-MM-DD'));
 const props = defineProps<{
     token: string;
+    currentProject: any;
 }>();
 
 interface TEvent {
@@ -210,17 +212,30 @@ const option = ref({
     ],
 });
 const currentList = ref<ResultDataList[]>([]);
-
-const setLineData = (currentData: ResultDataList[]) => {
+const currentLocalList = ref<ResultDataList[]>([]);
+const axiosSaveDateFileInfo = (date: ValueOf<Pick<ResultDataList, 'date'>>, list: ValueOf<Pick<ResultDataList, 'list'>>) => {
+    vscode.postMessage({
+        command: "SaveDateFileInfo",
+        data: {
+            date,
+            projectId: props.currentProject.id,
+            list,
+        },
+        token: localStorage.getItem("token"),
+    });
+}
+const setLineData = (currentData: ResultDataList[], listValue: Ref<ResultDataList[]>, save: boolean = false) => {
     let result;
-    // 从localstorage获取历史
-    const list: ResultDataList[] = currentList.value;
-    console.log({currentList: currentList.value})
+    const list: ResultDataList[] = JSON.parse(JSON.stringify(listValue.value));
     const hasCurrentDayDataIndex = list.findIndex(item => item.date === currentData[0]?.date)
     if (hasCurrentDayDataIndex !== -1) {
         list.splice(hasCurrentDayDataIndex, 1, currentData[0])
         result = list;
     } else {
+        if (save) {
+            listValue.value =  listValue.value.concat(currentData);
+            axiosSaveDateFileInfo(currentData[0]?.date!, currentData[0]?.list!)
+        }
         result = list.concat(currentData) 
     }
     result = result.sort((before, aftter) => before.date > aftter.date ? 1 : -1)
@@ -261,12 +276,13 @@ onMounted(() => {
         const message = event.data; // The JSON data our extension sent
         if (message.command === 'TsAnalyze') {
             const currentData: ResultDataList[] = message.data;
-            setLineData(currentData);
-            currentList.value = currentList.value.concat(currentData);
+            currentLocalList.value = currentLocalList.value.length ? currentLocalList.value : currentList.value;
+            setLineData(currentData, currentLocalList, true);
         } else if (message.command === 'GetProjectFileList') {
+            currentLocalList.value = [];
             const currentData2: ResultDataList[] = message.data;
             currentList.value = currentData2;
-            setLineData(currentData2);
+            setLineData(currentData2, currentList);
         }
     });
 })
