@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref, unref } from "vue";
 import Echats from './Echats.vue';
 import Login from './login.vue';
 import type { IWorkSpaceOptions } from './type';
@@ -45,7 +45,12 @@ const changeProject = () => {
 }
 const logined = ref(false);
 const token = ref('');
-
+const show = ref(true);
+const reload = async () => {
+  show.value = false;
+   await nextTick();
+  show.value = true;
+}
 onMounted(() => {
   data.value = 10;
   window.addEventListener('message', event => {
@@ -65,19 +70,33 @@ onMounted(() => {
   });
 })
 
+const projectName = ref('');
+const createProject = () => {
+  vscode.postMessage({
+    command: "CreateProject",
+    projectName: projectName.value,
+    token: localStorage.getItem("token"),
+  });
+}
 </script>
 
 <template>
   <main>
-    <el-select v-if="logined" v-model="currentProjectIndex" @change="changeProject" class="m-2" placeholder="Select" size="small">
-      <el-option
-        v-for="(item, index) in projectList"
-        :key="index"
-        :label="item.projectName"
-        :value="index"
-      />
-    </el-select>
-    <Echats :currentProject="currentProject" :token="token" v-if="logined"/>
+    <div v-if="logined">
+      <div v-if="projectList.length > 0">
+        <el-select v-model="currentProjectIndex" @change="changeProject" class="m-2" placeholder="Select" size="small">
+          <el-option
+            v-for="(item, index) in projectList"
+            :key="index"
+            :label="item.projectName"
+            :value="index"
+          />
+        </el-select>
+        <Echats :currentProject="currentProject" :token="token"/>
+      </div>
+        <el-input v-model="projectName"></el-input>
+        <vscode-button @click="createProject">createProject!</vscode-button>
+      </div>
     <Login v-show="!logined" v-model="logined"/>
     <vscode-button @click="handleHowdyClick">Howdy!</vscode-button>
   </main>

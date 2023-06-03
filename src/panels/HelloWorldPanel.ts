@@ -1,7 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, SnippetString, workspace } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getCurrentDayData } from '../utilities/file';
-import { axiosSaveDateFileInfo, getAxiosData, getLoginData, getProjectFileList, getProjectList } from './../utilities/axios';
+import { axiosCreateProject, axiosSaveDateFileInfo, getAxiosData, getLoginData, getProjectFileList, getProjectList } from './../utilities/axios';
 
 
 /**
@@ -159,6 +159,9 @@ export class HelloWorldPanel {
               }
         } else if (command === 'SaveDateFileInfo') {
             axiosSaveDateFileInfo(message.data, message.token);
+        } else if (command === 'CreateProject') {
+            const res = await axiosCreateProject(message.projectName, message.token);
+            this._panel.webview.postMessage({ command: 'ProjectList', data: res });
         }
       },
       undefined,

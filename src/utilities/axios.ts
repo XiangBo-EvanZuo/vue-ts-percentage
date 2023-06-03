@@ -16,7 +16,7 @@ export const getLoginData = async (workSpace: readonly WorkspaceFolder[] | undef
             "Content-Type": "application/x-www-form-urlencoded"
         }
     });
-    console.log({res666: res});
+    console.log({getLoginData: res});
     if (res.data.code !== 200) {
         throw res.data;
     }
@@ -32,7 +32,7 @@ export const getProjectList = async (token: string) => {
             Authorization: `Bearer ${token}`,
         }
     });
-    console.log({res1: res});
+    console.log({getProjectList: res});
     return res;
 };
 
@@ -46,7 +46,7 @@ export const getProjectFileList = async (token: string, projectId: number) => {
             Authorization: `Bearer ${token}`,
         }
     });
-    console.log({res2: res});
+    console.log({getProjectFileList: res});
     return res;
 };
 export const axiosSaveDateFileInfo = async (data: any, token: string) => {
@@ -56,6 +56,18 @@ export const axiosSaveDateFileInfo = async (data: any, token: string) => {
             Authorization: `Bearer ${token}`,
         }
     });
-    console.log({res9: res});
+    console.log({axiosSaveDateFileInfo: res});
     return res;
+};
+export const axiosCreateProject = async (projectName: string, token: string) => {
+    const params = {
+        projectName,
+    };
+    const res = await axios.post('http://localhost:9201/resource/project/saveProject', params, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    });
+    console.log({axiosCreateProject: res});
+    return res.data.data;
 };
