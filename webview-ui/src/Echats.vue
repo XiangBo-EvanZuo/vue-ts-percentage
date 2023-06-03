@@ -10,7 +10,7 @@
         <vscode-button @click="pickerChange">showTsAnalyze!</vscode-button>
         <div style="display: flex; width: 100vw;">
             <v-chart class="chart" :option="pieOption" />
-            <v-chart @highlight="lineClick" class="chart" :option="option" />
+            <v-chart v-if="showEchart" @highlight="lineClick" class="chart" :option="option" />
         </div>
     </div>
 </template>
@@ -31,7 +31,7 @@ import {
 } from "echarts/components";
 
 import VChart, { THEME_KEY } from "vue-echarts";
-import { ref, provide, onMounted, type Ref } from "vue";
+import { ref, provide, onMounted, type Ref, nextTick } from "vue";
 import { formatEchartsData, type DataList, type ResultDataList, type I } from "./utilities/echarts";
 import { dayjs } from "element-plus";
 import { vscode } from "./utilities/vscode";
@@ -224,7 +224,14 @@ const axiosSaveDateFileInfo = (date: ValueOf<Pick<ResultDataList, 'date'>>, list
         token: localStorage.getItem("token"),
     });
 }
+const showEchart = ref(true);
+const reloadEchart = async () => {
+    showEchart.value = false;
+    await nextTick()
+    showEchart.value = true;
+}
 const setLineData = (currentData: ResultDataList[], listValue: Ref<ResultDataList[]>, save: boolean = false) => {
+    console.log({listValue: listValue.value})
     let result;
     const list: ResultDataList[] = JSON.parse(JSON.stringify(listValue.value));
     const hasCurrentDayDataIndex = list.findIndex(item => item.date === currentData[0]?.date)
@@ -238,6 +245,7 @@ const setLineData = (currentData: ResultDataList[], listValue: Ref<ResultDataLis
         }
         result = list.concat(currentData) 
     }
+    console.log({result})
     result = result.sort((before, aftter) => before.date > aftter.date ? 1 : -1)
     // 合成list
     // show list
@@ -260,7 +268,8 @@ const setLineData = (currentData: ResultDataList[], listValue: Ref<ResultDataLis
     option.value.legend.data = seriesList.map(item => item.name)
     const data = result[0].list
     getPieOptionData(data)
-    resultData.value = result
+    resultData.value = result;
+    reloadEchart()
 }
 
 onMounted(() => {
@@ -281,8 +290,15 @@ onMounted(() => {
         } else if (message.command === 'GetProjectFileList') {
             currentLocalList.value = [];
             const currentData2: ResultDataList[] = message.data;
-            currentList.value = currentData2;
-            setLineData(currentData2, currentList);
+            if (message.data?.length) {
+                currentList.value = currentData2;
+                setLineData(currentData2, currentList);
+            } else {
+                currentList.value = [];
+                option.value.xAxis.data = [];
+                option.value.series = [];
+                option.value.legend.data = []
+            }
         }
     });
 })
